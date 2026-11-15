@@ -1,20 +1,26 @@
 // Find the elements on the page using the id name tags we gave them.
-// document.getElementById("...") returns the matching element.
-// const means these variables won't be reassigned later.
 const todoInput = document.getElementById("todo-input");
 const addBtn = document.getElementById("add-btn");
 
-// A function is a named block of code we can run whenever we want.
-// This one will run each time the Add button is clicked.
+// NEW: also find the empty list, because we will add tasks into it.
+const todoList = document.getElementById("todo-list");
+
+// Runs each time the Add button is clicked.
 function addTodo() {
   // .value is whatever text is currently typed in the input box.
   const text = todoInput.value;
 
-  // Print it to the console so we can confirm we are reading it correctly.
-  console.log("You typed:", text);
+  // NEW: create a brand new <li> element in memory.
+  // It is not on the page yet, it only exists in JavaScript for now.
+  const li = document.createElement("li");
+
+  // NEW: put the typed text inside the <li>.
+  // textContent is safe: it treats the text as plain text, not HTML.
+  li.textContent = text;
+
+  // NEW: attach the <li> to the <ul>. Now it shows up on the page.
+  todoList.appendChild(li);
 }
 
-// Tell the browser: "when addBtn is clicked, run the addTodo function".
-// Note: we write addTodo without (), because we are handing over
-// the function itself, not running it right now.
+// When addBtn is clicked, run the addTodo function.
 addBtn.addEventListener("click", addTodo);

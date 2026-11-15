@@ -7,14 +7,10 @@ const todoList = document.getElementById("todo-list");
 
 // Runs each time the Add button is clicked.
 function addTodo() {
-  // NEW: .trim() removes spaces from the start and end of the text.
-  // This way a box containing only spaces counts as empty too.
+  // .trim() removes spaces from the start and end of the text.
   const text = todoInput.value.trim();
 
-  // NEW: if the text is empty, stop here.
-  // "return" exits the function immediately, so nothing below runs.
-  // The ! means "not", and an empty string counts as false,
-  // so !text is true when there is no text.
+  // If the text is empty, stop here.
   if (!text) {
     return;
   }
@@ -24,6 +20,14 @@ function addTodo() {
 
   // Put the typed text inside the <li>.
   li.textContent = text;
+
+  // NEW: when this <li> is clicked, run the code inside { }.
+  // classList.toggle("done") adds the "done" class if it is missing,
+  // and removes it if it is already there. So each click flips
+  // the task between done and not done.
+  li.addEventListener("click", function () {
+    li.classList.toggle("done");
+  });
 
   // Attach the <li> to the <ul>. Now it shows up on the page.
   todoList.appendChild(li);

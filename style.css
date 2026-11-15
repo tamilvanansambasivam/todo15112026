@@ -1,0 +1,8 @@
+/* Styles for the todo app. */
+
+/* Any element with class="done" shows crossed-out grey text.
+   script.js adds or removes this class when a task is clicked. */
+.done {
+  text-decoration: line-through;
+  color: gray;
+}

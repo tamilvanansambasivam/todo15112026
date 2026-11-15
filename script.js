@@ -3,19 +3,40 @@ const todoInput = document.getElementById("todo-input");
 const addBtn = document.getElementById("add-btn");
 const todoList = document.getElementById("todo-list");
 
-// NEW: this array is now the single source of truth for all tasks.
-// Each task is an object like { text: "Buy milk", done: false }.
-// let is used because we will change this array over time.
-let todos = [];
+// NEW: the name (key) under which we store our tasks in the browser.
+const STORAGE_KEY = "todos";
 
-// NEW: render() redraws the whole list on the page from the todos array.
-// Whenever the data changes, we change the array and then call render().
+// CHANGED: instead of starting with an empty array, we call loadTodos()
+// (defined just below). Function declarations are available before
+// the line where they are written, so this works.
+let todos = loadTodos();
+
+// NEW: save the todos array into the browser's localStorage.
+// localStorage can only store text, so JSON.stringify converts
+// the array into a text string first.
+function saveTodos() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
+
+// NEW: read the saved text back from localStorage.
+function loadTodos() {
+  // getItem returns null if nothing has been saved yet.
+  const saved = localStorage.getItem(STORAGE_KEY);
+
+  // If nothing is saved, start with an empty array.
+  if (!saved) {
+    return [];
+  }
+
+  // JSON.parse converts the saved text back into a real array.
+  return JSON.parse(saved);
+}
+
+// Redraws the whole list on the page from the todos array.
 function render() {
   // Wipe the list on the page so we can rebuild it from scratch.
   todoList.innerHTML = "";
 
-  // forEach runs the code below once for every task in the array.
-  // "todo" is the current task, "index" is its position (0, 1, 2...).
   todos.forEach(function (todo, index) {
     const li = document.createElement("li");
 
@@ -28,10 +49,10 @@ function render() {
       span.classList.add("done");
     }
 
-    // Clicking the text flips done between true and false,
-    // then redraws the list so the change shows up.
+    // Clicking the text flips done, saves, then redraws.
     span.addEventListener("click", function () {
       todo.done = !todo.done;
+      saveTodos(); // NEW
       render();
     });
 
@@ -39,14 +60,13 @@ function render() {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
 
-    // splice(index, 1) removes 1 item from the array at this position.
-    // Then we redraw the list.
+    // Remove the task, save, then redraw.
     deleteBtn.addEventListener("click", function () {
       todos.splice(index, 1);
+      saveTodos(); // NEW
       render();
     });
 
-    // Put the text and button inside the <li>, and the <li> in the list.
     li.appendChild(span);
     li.appendChild(deleteBtn);
     todoList.appendChild(li);
@@ -55,7 +75,6 @@ function render() {
 
 // Runs each time the Add button is clicked.
 function addTodo() {
-  // .trim() removes spaces from the start and end of the text.
   const text = todoInput.value.trim();
 
   // If the text is empty, stop here.
@@ -63,15 +82,18 @@ function addTodo() {
     return;
   }
 
-  // CHANGED: instead of building HTML here, add a task object to the array.
+  // Add a task object to the array.
   todos.push({ text: text, done: false });
 
   // Clear the input box.
   todoInput.value = "";
 
-  // CHANGED: redraw the list from the array.
+  saveTodos(); // NEW
   render();
 }
 
 // When addBtn is clicked, run the addTodo function.
 addBtn.addEventListener("click", addTodo);
+
+// NEW: draw the saved tasks as soon as the page loads.
+render();
